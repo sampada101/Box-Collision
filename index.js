@@ -81,6 +81,7 @@ async function game(){
 	context.canvas.width = width;
 
 	for (ball in balls) {
+		balls[ball].radius = width/50
 		balls[ball].updatePosition(width, height)
 		context.fillStyle = balls[ball].color;
 		context.beginPath();
