@@ -1,3 +1,4 @@
+var noOfBalls = 15
 const Ball = function(x, y, radius){
 	this.color = randomColor();
 	this.radius = radius;
@@ -12,17 +13,17 @@ const Ball = function(x, y, radius){
 
 		if (this.x-this.radius < 0){
 			this.x = this.radius
-			this.position = Math.atan2(Math.sin(this.position), Math.cos(this.position)*  -1)
+			this.changeX()
 		}else if (this.x+this.radius > width){
 			this.x = width - this.radius
-			this.position = Math.atan2(Math.sin(this.position), Math.cos(this.position)*  -1)
+			this.changeX()
 		}
 		if (this.y-this.radius < 0){
 			this.y = this.radius
-			this.position = Math.atan2(Math.sin(this.position)*  -1, Math.cos(this.position))
+			this.changeY()
 		}else if (this.y+this.radius > height){
 			this.y = height - this.radius
-			this.position = Math.atan2(Math.sin(this.position)*  -1, Math.cos(this.position))
+			this.changeY()
 		}
 	}
 
@@ -35,8 +36,21 @@ const Ball = function(x, y, radius){
 }
 var context = document.querySelector("canvas").getContext("2d");
 balls = []
-for (var i = 0; i < 15; i++) {
-	balls.push(new Ball(randomX(), randomY(), randomRadius()))
+for (var i = 0; i < noOfBalls; i++) {
+	var newBall = new Ball(randomX(), randomY(), randomRadius())
+	balls.push(createBalls(newBall))
+
+}
+function createBalls(newBall){
+	for (ballss in balls){
+		if (detectCollision(newBall, balls[ballss], changePosition=false)){
+			newBall.x = randomX()
+			newBall.y = randomY()
+			newball = createBalls(newBall)
+			return newball
+		}
+	}
+	return newBall
 }
 function randomX(){
 	var x = Math.random()*document.documentElement.clientWidth/2
@@ -54,24 +68,27 @@ function randomColor(){
 	var hex = "rgb("+Math.floor(Math.random()*256)+","+Math.floor(Math.random()*256)+","+Math.floor(Math.random()*256)+")"
 	return hex
 }
-function detectCollision(ball1, ball2){
-	var bothRadius = ball1.radius+ball2.radius
-	var x1 = ball1.x + ball1.radius
-	var x2 = ball2.x + ball2.radius
-	var y1 = ball1.y + ball1.radius
-	var y2 = ball2.y + ball2.radius
+function detectCollision(ball1, ball2, changePosition=true){
+		var bothRadius = ball1.radius+ball2.radius
+		var x1 = ball1.x + ball1.radius
+		var x2 = ball2.x + ball2.radius
+		var y1 = ball1.y + ball1.radius
+		var y2 = ball2.y + ball2.radius
 
-	var distance = Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2);
-	if (distance <= (Math.pow(bothRadius,2))){
-		ball1.changeY();
-		ball2.changeX();
-	}else{
+		var distance = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
+		if (distance <= bothRadius){
+			if (changePosition){
+				ball1.changeX();
+				ball1.changeY();
+			}else{
+				return true
+			}
+		}else{}
 	}
-}
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-async function game(){
+function game(){
 	window.requestAnimationFrame(game);
 
 	var width = document.documentElement.clientWidth/2
